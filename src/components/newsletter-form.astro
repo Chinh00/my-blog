@@ -1,0 +1,47 @@
+---
+import { buttondownUsername } from "@/config";
+
+interface Props {
+  heading: string;
+  text: string;
+  note?: string;
+}
+
+const { heading, text, note = "Vận hành bởi Buttondown." } = Astro.props;
+const action = buttondownUsername
+  ? `https://buttondown.com/api/emails/embed-subscribe/${buttondownUsername}`
+  : undefined;
+---
+
+<section class="newsletter" aria-labelledby="newsletter-title">
+  <h2 id="newsletter-title">{heading}</h2>
+  <p>{text}</p>
+  {
+    action ? (
+      <form class="newsletter-form" action={action} method="post">
+        <input
+          type="email"
+          name="email"
+          placeholder="email-cua-ban@vidu.com"
+          required
+          aria-label="Địa chỉ email của bạn"
+        />
+        <button class="btn" type="submit">Đăng ký</button>
+      </form>
+    ) : (
+      <form class="newsletter-form">
+        <input
+          type="email"
+          name="email"
+          placeholder="email-cua-ban@vidu.com"
+          disabled
+          aria-label="Địa chỉ email của bạn (chưa kích hoạt)"
+        />
+        <button class="btn" type="submit" disabled>Đăng ký</button>
+      </form>
+    )
+  }
+  <p class="newsletter-note">
+    {action ? note : "Newsletter sẽ sớm hoạt động — cần cấu hình Buttondown (xem README)."}
+  </p>
+</section>

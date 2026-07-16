@@ -1,0 +1,31 @@
+---
+import type { Post } from "@/lib/posts";
+
+interface Props {
+  /** Bài cũ hơn (pubDate nhỏ hơn). */
+  prev: Post | null;
+  /** Bài mới hơn (pubDate lớn hơn). */
+  next: Post | null;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="post-nav" aria-label="Bài viết liền kề">
+    {prev ? (
+      <a class="post-nav-link prev" href={`/bai-viet/${prev.id}/`}>
+        <span class="label">← Bài cũ hơn</span>
+        <span class="title">{prev.data.title}</span>
+      </a>
+    ) : (
+      <span></span>
+    )}
+    {next && (
+      <a class="post-nav-link next" href={`/bai-viet/${next.id}/`}>
+        <span class="label">Bài mới hơn →</span>
+        <span class="title">{next.data.title}</span>
+      </a>
+    )}
+  </nav>
+)}

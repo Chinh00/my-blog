@@ -1,0 +1,28 @@
+---
+import ThemeToggle from "@/components/theme-toggle.astro";
+
+const path = Astro.url.pathname;
+/* "Bài viết" bao cả trang chủ lẫn trang bài viết chi tiết */
+const current = (active: boolean) => (active ? "page" : undefined);
+const isPosts = path === "/" || path.startsWith("/bai-viet");
+const isTags = path.startsWith("/chu-de");
+const isAbout = path.startsWith("/gioi-thieu");
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="/" aria-label="Chính. — về trang chủ">Chính<span class="logo-dot">.</span></a>
+    <nav class="site-nav" aria-label="Điều hướng chính">
+      <a href="/" aria-current={current(isPosts)}>Bài viết</a>
+      <a href="/chu-de/" aria-current={current(isTags)}>Chủ đề</a>
+      <a href="/gioi-thieu/" aria-current={current(isAbout)}>Giới thiệu</a>
+    </nav>
+    <div class="header-actions">
+      <!-- Nút mở dialog tìm kiếm — Pagefind gắn vào ở phase 5 -->
+      <button class="icon-btn" id="search-btn" aria-label="Tìm kiếm (Ctrl+K)" title="Tìm kiếm (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      </button>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>

@@ -1,0 +1,66 @@
+---
+import "@/styles/global.css";
+import SeoMeta from "@/components/seo-meta.astro";
+import SiteHeader from "@/components/site-header.astro";
+import SiteFooter from "@/components/site-footer.astro";
+import SearchDialog from "@/components/search-dialog.astro";
+
+interface Props {
+  /** Tiêu đề trang — bỏ trống ở trang chủ để dùng title mặc định của site. */
+  title?: string;
+  description?: string;
+  type?: "website" | "article";
+  image?: string;
+}
+
+const { title, description, type, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <SeoMeta title={title} description={description} type={type} image={image} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Nạp bất đồng bộ để không chặn first paint (Lighthouse mobile);
+         display=swap → chữ hiện ngay bằng font fallback rồi swap sang Lora/BVP -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script is:inline>
+      /* Chống FOUC: đặt theme trước khi render. Ưu tiên lựa chọn đã lưu, fallback theo OS. */
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (!t)
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme = t;
+        /* Gate hiệu ứng chuyển động (§7 design-guidelines): chỉ bật khi KHÔNG prefers-reduced-motion */
+        if (window.matchMedia("(prefers-reduced-motion: no-preference)").matches)
+          document.documentElement.classList.add("fx");
+      })();
+    </script>
+  </head>
+  <body>
+    <SiteHeader />
+    <main class="container">
+      <slot />
+    </main>
+    <SiteFooter />
+    <SearchDialog />
+  </body>
+</html>

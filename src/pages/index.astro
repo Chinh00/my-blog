@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro";
+import NewsletterForm from "@/components/newsletter-form.astro";
+import { MastheadReveal } from "@/components/effects/masthead-reveal";
+import { PostListFx } from "@/components/effects/post-list-fx";
+import { RevealFx } from "@/components/effects/reveal-fx";
+import { getPublishedPosts } from "@/lib/posts";
+import { toPostCardData } from "@/lib/post-card-data";
+
+const posts = await toPostCardData(await getPublishedPosts());
+---
+
+<BaseLayout>
+  <section class="masthead">
+    <div class="fx-aurora" aria-hidden="true"></div>
+    <MastheadReveal client:visible leading="Xin chào, mình là" shiny="Chính." />
+    <p class="tagline">
+      Đây là góc nhỏ nơi mình viết về kinh nghiệm làm việc, những điều học được
+      và các lát cắt cuộc sống thường ngày. Mong bạn tìm thấy điều gì đó hữu ích.
+    </p>
+  </section>
+
+  <h2 class="section-title">Bài viết mới nhất</h2>
+  <PostListFx client:visible posts={posts} />
+
+  <RevealFx client:visible>
+    <NewsletterForm
+      heading="Thư đều đặn mỗi tháng"
+      text="Nhận bài viết mới qua email — không quảng cáo, không spam, hủy đăng ký lúc nào cũng được."
+      note="Vận hành bởi Buttondown. Mỗi tháng một thư, đúng nghĩa đen."
+    />
+  </RevealFx>
+</BaseLayout>

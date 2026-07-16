@@ -1,0 +1,81 @@
+---
+/* Dialog tìm kiếm — Pagefind UI được dynamic-import ở LẦN MỞ ĐẦU TIÊN
+   (0KB JS lúc tải trang — phạm vi budget phase 4). Index chỉ có sau build;
+   khi chạy dev mà chưa build, hiện ghi chú thay vì lỗi. */
+---
+
+<dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+  <div class="search-head">
+    <h2 id="search-title">Tìm kiếm</h2>
+    <button class="icon-btn" id="search-close" aria-label="Đóng tìm kiếm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </button>
+  </div>
+  <div id="search-container"></div>
+  <p class="search-note">Phím tắt: Ctrl/⌘ + K.</p>
+</dialog>
+
+<script>
+  const dialog = document.getElementById("search-dialog") as HTMLDialogElement | null;
+  const openBtn = document.getElementById("search-btn");
+  const closeBtn = document.getElementById("search-close");
+  const container = document.getElementById("search-container");
+
+  let loaded = false;
+  async function ensurePagefindUi() {
+    if (loaded || !container) return;
+    loaded = true;
+    try {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "/pagefind/pagefind-ui.css";
+      document.head.appendChild(link);
+      await new Promise<void>((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "/pagefind/pagefind-ui.js";
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error("pagefind-ui load failed"));
+        document.head.appendChild(s);
+      });
+      // @ts-expect-error PagefindUI đến từ script vừa nạp
+      new PagefindUI({
+        element: "#search-container",
+        showImages: false,
+        showSubResults: true,
+        translations: {
+          placeholder: "Gõ để tìm bài viết…",
+          clear_search: "Xóa",
+          load_more: "Xem thêm kết quả",
+          zero_results: "Không tìm thấy kết quả cho [SEARCH_TERM]",
+          many_results: "[COUNT] kết quả cho [SEARCH_TERM]",
+          one_result: "[COUNT] kết quả cho [SEARCH_TERM]",
+          searching: "Đang tìm [SEARCH_TERM]…",
+        },
+      });
+      const input = container.querySelector<HTMLInputElement>("input");
+      input?.focus();
+    } catch {
+      container.innerHTML =
+        '<p class="search-note">Tìm kiếm chỉ khả dụng sau khi build (index Pagefind sinh lúc <code>npm run build</code>).</p>';
+    }
+  }
+
+  function openSearch() {
+    if (!dialog) return;
+    dialog.showModal();
+    void ensurePagefindUi();
+  }
+
+  openBtn?.addEventListener("click", openSearch);
+  closeBtn?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      if (dialog?.open) dialog.close();
+      else openSearch();
+    }
+  });
+</script>

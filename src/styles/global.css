@@ -1,0 +1,1003 @@
+/* ============================================================
+   GLOBAL CSS — my-blog
+   Nguồn chân lý tokens: docs/design-guidelines.md §1
+   Markup/CSS tham chiếu: docs/wireframe/*.html
+   ============================================================ */
+
+/* Tailwind v4 (PostCSS): chỉ theme + utilities cho component registry (phase 4).
+   KHÔNG import preflight — CSS nền của blog viết theo element trần (h1, p, blockquote…)
+   như wireframe; preflight sẽ reset các mặc định đó và gây lệch visual. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ============ DESIGN TOKENS — §1 design-guidelines ============ */
+:root {
+  color-scheme: light;
+  /* Màu — Light */
+  --bg: #fafaf8;
+  --surface: #f1eee7;
+  --text: #1a1a1a;
+  --muted: #6e6a63; /* meta text ~60%, đạt AA 4.9:1 trên --bg */
+  --border: #e3e0d8;
+  --accent: #d4845c; /* terracotta — trang trí, viền, heading lớn */
+  --accent-ink: #a85b32; /* link/chữ nhỏ màu nhấn — AA 4.5:1 trên --bg */
+  --accent-soft: #f5e4d9; /* nền tag pill, selection */
+  --tag-ink: #9a5230; /* chữ trên --accent-soft — 4.69:1 (accent-ink chỉ 4.04:1 trên nền pill) */
+  --on-accent: #2b1b10; /* chữ trên nền accent (đạt AA cả 2 theme) */
+  --shadow: 0 1px 2px rgb(26 26 26 / 0.04), 0 6px 16px rgb(26 26 26 / 0.06);
+
+  /* Chữ */
+  --font-body: "Lora", Georgia, "Times New Roman", serif;
+  --font-heading: "Be Vietnam Pro", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text-sm: 0.875rem; /* 14px — meta, byline */
+  --text-caption: 0.9375rem; /* 15px — chú thích ảnh */
+  --text-base: 1.0625rem; /* 17px — body */
+  --text-lg: 1.1875rem; /* 19px — sapo/lead */
+  --text-h3: 1.5rem; /* 24px */
+  --text-h2: clamp(1.75rem, 1.5vw + 1.3rem, 2rem); /* 28→32px */
+  --text-h1: clamp(2rem, 3vw + 1.1rem, 2.5rem); /* 32→40px */
+  --text-display: clamp(2.125rem, 4vw + 1.05rem, 2.875rem); /* 34→46px */
+  --leading-tight: 1.15;
+  --leading-heading: 1.25;
+  --leading-body: 1.55;
+  --tracking-body: 0.3px; /* giãn chữ nhẹ giúp dấu tiếng Việt rõ hơn */
+
+  /* Khoảng cách (thang 4px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Bo góc & khung */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-full: 999px;
+  --content: 700px; /* ~66ch với Lora 17px */
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1a1a1a;
+  --surface: #242220;
+  --text: #f0ede8;
+  --muted: #a39f96;
+  --border: #3a3733;
+  --accent: #e5c287; /* golden — đạt AA 10:1 trên nền tối */
+  --accent-ink: #e5c287;
+  --accent-soft: #332b1d;
+  --tag-ink: #e5c287; /* 8.24:1 trên --accent-soft tối */
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.25);
+}
+
+/* ============ Nền tảng ============ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  letter-spacing: -0.015em;
+  color: var(--text);
+  margin: 0 0 var(--space-4);
+}
+h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-tight);
+}
+h2 {
+  font-size: var(--text-h2);
+}
+h3 {
+  font-size: var(--text-h3);
+}
+p {
+  margin: 0 0 var(--space-5);
+}
+a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--accent-ink) 45%, transparent);
+}
+a:hover {
+  text-decoration-color: var(--accent-ink);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+.container {
+  width: min(var(--content), 100% - 2.5rem);
+  margin-inline: auto;
+}
+.accent {
+  color: var(--accent-ink);
+}
+
+/* ============ Header (đồng nhất mọi trang) ============ */
+.site-header {
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding-block: var(--space-4);
+  flex-wrap: wrap;
+}
+.logo {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.375rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.logo-dot {
+  color: var(--accent);
+}
+.site-nav {
+  display: flex;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+.site-nav a {
+  font-family: var(--font-heading);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-1);
+}
+.site-nav a:hover {
+  color: var(--text);
+}
+.site-nav a[aria-current="page"] {
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem; /* 44px — chuẩn touch target */
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+/* Toggle theme: light hiển thị icon trăng, dark hiển thị icon mặt trời */
+.icon-sun {
+  display: none;
+}
+[data-theme="dark"] .icon-sun {
+  display: block;
+}
+[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+/* ============ Footer (đồng nhất mọi trang) ============ */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-9);
+}
+.footer-inner {
+  padding-block: var(--space-6) var(--space-7);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.footer-inner p {
+  margin: 0;
+}
+.footer-links {
+  display: flex;
+  gap: var(--space-4);
+}
+.footer-links a {
+  font-family: var(--font-heading);
+  color: var(--muted);
+  text-decoration: none;
+}
+.footer-links a:hover {
+  color: var(--accent-ink);
+}
+.footer-note {
+  width: 100%;
+  font-size: 0.8125rem;
+  font-family: var(--font-heading);
+}
+
+/* ============ Masthead (trang chủ) ============ */
+.masthead {
+  padding-block: var(--space-8) var(--space-6);
+}
+.masthead h1 {
+  font-size: var(--text-display);
+  margin-bottom: var(--space-4);
+}
+.masthead .tagline {
+  font-size: var(--text-lg);
+  color: var(--muted);
+  max-width: 34rem;
+  margin: 0;
+}
+
+/* ============ Post card ============ */
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.post-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.post-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.post-meta {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  letter-spacing: normal;
+  margin-bottom: var(--space-2);
+}
+.post-card h3 {
+  font-size: 1.3125rem;
+  margin-bottom: var(--space-2);
+}
+.post-card h3 a {
+  color: var(--text);
+  text-decoration: none;
+}
+.post-card h3 a:hover {
+  color: var(--accent-ink);
+}
+.post-card .excerpt {
+  margin: 0 0 var(--space-3);
+  color: var(--text);
+}
+
+/* ============ Tag pill ============ */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.tag {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  color: var(--tag-ink);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.tag:hover {
+  background: color-mix(in srgb, var(--accent) 28%, var(--bg));
+}
+.tag .count {
+  font-weight: 400;
+  opacity: 0.75;
+}
+.tag--lg {
+  font-size: 0.9375rem;
+  padding: var(--space-2) var(--space-4);
+}
+
+/* ============ Section chung ============ */
+.section-title {
+  font-size: 1.375rem;
+  margin: var(--space-8) 0 var(--space-5);
+}
+.section-title::before {
+  content: "— ";
+  color: var(--accent);
+}
+
+/* ============ Bài viết (post page) ============ */
+.post-header {
+  padding-block: var(--space-8) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-6);
+}
+.post-title {
+  font-size: var(--text-display);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-4);
+}
+.byline {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  letter-spacing: normal;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.byline .dot::before {
+  content: "·";
+  margin-inline: var(--space-1);
+}
+.prose .lead,
+.prose > p:first-of-type {
+  font-size: var(--text-lg);
+  color: var(--muted);
+}
+.prose h2 {
+  margin-top: var(--space-7);
+}
+.prose h3 {
+  margin-top: var(--space-6);
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4rem;
+  margin: 0 0 var(--space-5);
+}
+.prose li {
+  margin-bottom: var(--space-2);
+}
+.prose hr {
+  border: none;
+  text-align: center;
+  margin: var(--space-7) 0;
+}
+.prose hr::before {
+  content: "···";
+  letter-spacing: 0.75em;
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+/* Blockquote */
+blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-2) 0 var(--space-2) var(--space-5);
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+  font-size: 1.125rem;
+}
+blockquote p {
+  margin-bottom: var(--space-2);
+}
+blockquote cite {
+  display: block;
+  font-style: normal;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+/* Code */
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  overflow-x: auto;
+  margin: var(--space-6) 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  letter-spacing: normal;
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  letter-spacing: normal;
+}
+p code,
+li code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.4em;
+}
+
+/* Ảnh + chú thích */
+figure {
+  margin: var(--space-6) 0;
+}
+figcaption {
+  font-family: var(--font-heading);
+  font-size: var(--text-caption);
+  color: var(--muted);
+  text-align: center;
+  margin-top: var(--space-3);
+  letter-spacing: normal;
+}
+
+/* Chân bài viết */
+.post-footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+.post-footer .tag-list {
+  margin-bottom: var(--space-6);
+}
+
+/* Prev / Next */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+.post-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.post-nav-link:hover {
+  border-color: var(--accent);
+}
+.post-nav-link .label {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.post-nav-link .title {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text);
+  letter-spacing: normal;
+}
+.post-nav-link.next {
+  text-align: right;
+}
+
+/* ============ Newsletter (Buttondown) ============ */
+.newsletter {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-top: var(--space-8);
+  text-align: center;
+}
+.newsletter h2 {
+  font-size: 1.375rem;
+  margin-bottom: var(--space-2);
+}
+.newsletter > p {
+  color: var(--muted);
+  max-width: 30rem;
+  margin: 0 auto var(--space-5);
+}
+.newsletter-form {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 26rem;
+  margin: 0 auto;
+}
+.newsletter-form input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-heading);
+  font-size: 0.9375rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.newsletter-form input[type="email"]:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.btn {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+}
+.btn:hover {
+  filter: brightness(0.94);
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.newsletter-note {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin: var(--space-3) 0 0;
+}
+
+/* ============ Giscus placeholder ============ */
+.giscus-placeholder {
+  margin-top: var(--space-7);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-7) var(--space-5);
+  text-align: center;
+  color: var(--muted);
+}
+.giscus-placeholder h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-2);
+}
+.giscus-placeholder p {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+/* ============ Search dialog (Pagefind — phase 5) ============ */
+.search-dialog {
+  width: min(34rem, calc(100% - 2.5rem));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  padding: var(--space-5);
+  box-shadow: var(--shadow);
+}
+.search-dialog::backdrop {
+  background: rgb(26 26 26 / 0.45);
+  backdrop-filter: blur(2px);
+}
+.search-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+.search-head h2 {
+  font-size: 1.125rem;
+  margin: 0;
+}
+.search-dialog input[type="search"] {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.search-dialog input[type="search"]:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.search-note {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin: var(--space-3) 0 0;
+}
+/* Pagefind UI đọc màu qua --pagefind-ui-* → map về tokens §1 */
+#search-container {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: var(--accent-ink);
+  --pagefind-ui-text: var(--text);
+  --pagefind-ui-background: var(--bg);
+  --pagefind-ui-border: var(--border);
+  --pagefind-ui-tag: var(--surface);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: var(--radius-sm);
+  --pagefind-ui-font: var(--font-heading);
+}
+
+/* ============ Trang giới thiệu ============ */
+.about-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding-block: var(--space-8) var(--space-5);
+}
+.avatar-placeholder {
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+  color: var(--on-accent);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 2rem;
+  border: 3px solid var(--bg);
+  box-shadow: var(--shadow);
+}
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.contact-list .label {
+  display: inline-block;
+  min-width: 6.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+/* ============ Trang chủ đề ============ */
+.page-header {
+  padding-block: var(--space-8) var(--space-2);
+}
+.page-header .desc {
+  color: var(--muted);
+  margin: 0;
+}
+.tag-cloud {
+  margin-top: var(--space-5);
+}
+.filter-note {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin: 0 0 var(--space-4);
+}
+
+/* ============ Responsive — breakpoint 640px ============ */
+@media (max-width: 640px) {
+  .site-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+  }
+  .header-inner {
+    row-gap: var(--space-1);
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .newsletter-form {
+    flex-direction: column;
+  }
+  .post-nav {
+    grid-template-columns: 1fr;
+  }
+  .post-nav-link.next {
+    text-align: left;
+  }
+  .about-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Map token blog → namespace --color-* của Tailwind v4 (MagicCard và các
+   utility bg-background/border của component registry đọc từ đây). */
+@theme inline {
+  --color-background: var(--bg);
+  --color-border: var(--border);
+}
+
+/* ============================================================
+   MOTION — §7 design-guidelines (hiệu ứng kiểu 21st.dev)
+   Chỉ animate opacity / transform / filter / background-* → không layout shift.
+   Gate html.fx: script <head> chỉ thêm khi KHÔNG prefers-reduced-motion,
+   nên người dùng reduced-motion / no-JS thấy nội dung ngay lập tức.
+   Reveal/spotlight/beam chạy bằng React islands (motion) — CSS dưới đây là
+   phần thuần: shimmer, underline sweep, aurora, nút, progress, theme, VT.
+   ============================================================ */
+:root {
+  --dur-xs: 150ms; /* micro: nút, icon */
+  --dur-sm: 250ms; /* hover: underline sweep, spotlight */
+  --dur-md: 450ms; /* page-title fade (post/tags/about) */
+  --dur-lg: 700ms; /* reveal: từ trong masthead, card/section */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* chuyển động "đi vào" (reveal) */
+  --ease-swift: cubic-bezier(0.4, 0, 0.2, 1); /* đổi trạng thái hover/active */
+  --stagger: 90ms; /* bước trễ giữa từ / giữa card cùng lô */
+  /* Stop sáng của shimmer — light: mix ink+accent (3.6:1, đủ AA large text) */
+  --shimmer-hi: color-mix(in srgb, var(--accent-ink) 50%, var(--accent));
+}
+[data-theme="dark"] {
+  --shimmer-hi: #f6e3be;
+}
+
+@keyframes fx-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fx-shimmer {
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes fx-drift {
+  to {
+    transform: translate3d(9%, 7%, 0) scale(1.18);
+  }
+}
+
+/* --- Shimmer "Chính." (island AnimatedShinyText render span.fx-shimmer):
+   2 lượt sau khi reveal xong rồi dừng — khi nghỉ là màu ink đặc (AA 4.5:1) --- */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  html.fx .fx-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      var(--accent-ink) 44%,
+      var(--shimmer-hi) 50%,
+      var(--accent-ink) 56%
+    );
+    background-size: 250% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fx-shimmer 2.4s ease-in-out 1.15s 2;
+  }
+}
+
+/* --- Page-title fade (post/tags/about) — bản rút gọn của masthead reveal --- */
+html.fx .fx-title {
+  animation: fx-fade-up var(--dur-md) var(--ease-out) both;
+}
+html.fx .fx-title-sub {
+  animation: fx-fade-up var(--dur-md) var(--ease-out) 0.12s both;
+}
+html.fx .masthead .tagline {
+  animation: fx-fade-up var(--dur-lg) var(--ease-out) 0.55s both;
+}
+
+/* --- Underline sweep — prose: nền 45% luôn hiện, line accent quét vào khi hover --- */
+html.fx .prose a,
+html.fx .filter-note a {
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent-ink), var(--accent-ink)),
+    linear-gradient(
+      color-mix(in srgb, var(--accent-ink) 45%, transparent),
+      color-mix(in srgb, var(--accent-ink) 45%, transparent)
+    );
+  background-size: 0 1px, 100% 1px;
+  background-position: 0 100%, 0 100%;
+  background-repeat: no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--dur-sm) var(--ease-swift);
+}
+html.fx .prose a:hover,
+html.fx .filter-note a:hover {
+  background-size: 100% 1px, 100% 1px;
+}
+/* Nav & footer: quét underline khi hover (không áp cho trang hiện tại aria-current) */
+html.fx .site-nav a:not([aria-current]) {
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0 2px;
+  background-position: 0 calc(100% - 4px);
+  background-repeat: no-repeat;
+  transition: background-size var(--dur-sm) var(--ease-swift), color 0.15s;
+}
+html.fx .site-nav a:not([aria-current]):hover {
+  background-size: 100% 2px;
+}
+html.fx .footer-links a {
+  background-image: linear-gradient(var(--accent-ink), var(--accent-ink));
+  background-size: 0 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--dur-sm) var(--ease-swift), color 0.15s;
+}
+html.fx .footer-links a:hover {
+  background-size: 100% 1px;
+}
+
+/* --- Micro-interaction nút --- */
+html.fx .btn {
+  transition: filter var(--dur-xs), transform var(--dur-xs) var(--ease-swift),
+    box-shadow var(--dur-xs);
+}
+html.fx .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+html.fx .btn:active {
+  transform: translateY(0) scale(0.97);
+}
+html.fx .icon-btn {
+  transition: color 0.15s, background-color 0.15s,
+    transform var(--dur-xs) var(--ease-swift);
+}
+html.fx .icon-btn:active {
+  transform: scale(0.9);
+}
+
+/* --- Aurora sau masthead (home) — reduced-motion: đứng yên (animation đã tắt ở rule chung) --- */
+.masthead {
+  position: relative;
+  isolation: isolate;
+}
+.fx-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  /* mask làm mờ dần ra mép → quầng sáng mềm, không thành khối chữ nhật */
+  -webkit-mask: radial-gradient(58% 88% at 30% 38%, #000 22%, transparent 64%);
+  mask: radial-gradient(58% 88% at 30% 38%, #000 22%, transparent 64%);
+}
+.fx-aurora::before,
+.fx-aurora::after {
+  content: "";
+  position: absolute;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(64px);
+}
+.fx-aurora::before {
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  top: -35%;
+  left: -12%;
+  opacity: 0.7;
+  animation: fx-drift 16s ease-in-out infinite alternate;
+}
+.fx-aurora::after {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 28%, transparent) 0%,
+    transparent 70%
+  );
+  bottom: -45%;
+  right: -8%;
+  opacity: 0.45;
+  animation: fx-drift 22s ease-in-out infinite alternate-reverse;
+}
+
+/* --- Reading progress (post) — phản hồi trực tiếp theo scroll,
+   chạy cả khi reduced-motion (§7.3), không transition --- */
+.fx-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 20;
+  pointer-events: none;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* --- Card trong MagicCard island: island đảm nhiệm viền + spotlight,
+   tắt viền/hover riêng của .post-card; giữ lift −2px + shadow ở wrapper --- */
+.fx-card {
+  border-radius: var(--radius-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+html.fx .fx-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.post-card--fx,
+.post-card--fx:hover {
+  border-color: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Theme transition mượt: JS thêm html.theme-anim trong 350ms khi bấm toggle --- */
+html.fx.theme-anim,
+html.fx.theme-anim *,
+html.fx.theme-anim *::before,
+html.fx.theme-anim *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+    fill 0.3s ease, stroke 0.3s ease !important;
+}
+
+/* --- Native View Transitions chuyển trang (user chốt 2026-07-16) —
+   browser chưa hỗ trợ sẽ bỏ qua rule này, không lỗi --- */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}

@@ -1,0 +1,70 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro";
+import NewsletterForm from "@/components/newsletter-form.astro";
+---
+
+<BaseLayout
+  title="Giới thiệu"
+  description="Về Nguyễn Văn Chính — người viết blog này, và lý do blog tồn tại."
+>
+  <header class="about-header">
+    <!-- TODO(onboarding): thay bằng ảnh thật 208×208px, alt="Chân dung Nguyễn Văn Chính" -->
+    <div class="avatar-placeholder" role="img" aria-label="Ảnh chân dung Nguyễn Văn Chính (placeholder)">NC</div>
+    <div>
+      <h1 class="fx-title">Xin chào, mình là Chính.</h1>
+      <p class="byline fx-title-sub" style="margin:0">Hà Nội, Việt Nam · viết từ 2024</p>
+    </div>
+  </header>
+
+  <div class="prose">
+    <p class="lead">
+      Cảm ơn bạn đã ghé qua. Đây là nơi mình lưu lại những gì học được trên
+      đường đi — để nhớ lâu hơn, và biết đâu lại giúp được ai đó đang đi đoạn
+      đường tương tự.
+    </p>
+
+    <p>
+      Ban ngày mình làm việc trong ngành phần mềm. Ngoài giờ, mình đọc sách, đi
+      những chuyến ngắn ngày, và tập viết đều đặn. Blog này không có chủ đề cố
+      định — mình viết về <strong>kinh nghiệm làm việc</strong>,
+      <strong>những điều học được</strong>, và
+      <strong>các lát cắt cuộc sống</strong> mà mình thấy đáng kể lại.
+    </p>
+
+    <p>
+      Mình tin rằng viết là cách học sâu nhất: một ý tưởng chưa thể diễn đạt rõ
+      ràng là một ý tưởng chưa thực sự thuộc về mình. Vì vậy mọi bài ở đây đều
+      được viết trước hết cho chính mình — nếu nó hữu ích với bạn nữa thì đó là
+      một niềm vui nhân đôi.
+    </p>
+
+    <p>
+      Nếu bạn muốn trao đổi về bất kỳ bài viết nào, hoặc chỉ đơn giản là chào
+      một câu, đừng ngại liên hệ. Mình đọc và trả lời tất cả email, dù đôi khi
+      hơi chậm.
+    </p>
+
+    <h2>Liên hệ</h2>
+    <!-- TODO(onboarding): thay # và email ví dụ bằng liên kết thật -->
+    <ul class="contact-list">
+      <li><span class="label">Email</span> <a href="mailto:chao@vidu.com">chao@vidu.com</a></li>
+      <li><span class="label">GitHub</span> <a href="#" rel="me">github.com/nguyenvanchinh</a></li>
+      <li><span class="label">Facebook</span> <a href="#" rel="me">fb.com/nguyenvanchinh</a></li>
+      <li><span class="label">RSS</span> <a href="/rss.xml">Theo dõi blog qua RSS</a></li>
+    </ul>
+
+    <hr />
+
+    <p>
+      Blog được dựng bằng <a href="https://astro.build">Astro</a>, chữ
+      <a href="https://fonts.google.com/specimen/Lora">Lora</a> và
+      <a href="https://fonts.google.com/specimen/Be+Vietnam+Pro">Be Vietnam Pro</a>
+      — cả hai đều hỗ trợ đầy đủ tiếng Việt.
+    </p>
+  </div>
+
+  <NewsletterForm
+    heading="Giữ liên lạc nhé"
+    text="Mỗi tháng một email tổng hợp bài viết mới. Không spam, hủy lúc nào cũng được."
+  />
+</BaseLayout>

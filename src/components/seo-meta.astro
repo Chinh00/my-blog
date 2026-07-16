@@ -1,0 +1,35 @@
+---
+import { siteTitle, siteTagline, siteDescription, author } from "@/config";
+
+interface Props {
+  /** Tiêu đề trang — bỏ trống ở trang chủ để dùng title mặc định của site. */
+  title?: string;
+  description?: string;
+  type?: "website" | "article";
+  /** Đường dẫn ảnh OG (tuyệt đối hoặc bắt đầu bằng /). */
+  image?: string;
+}
+
+const {
+  title,
+  description = siteDescription,
+  type = "website",
+  image = "/og-default.png",
+} = Astro.props;
+
+const fullTitle = title ? `${title} — ${siteTitle}` : `${siteTitle} — ${siteTagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={author} />
+<link rel="canonical" href={canonical.href} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical.href} />
+<meta property="og:image" content={ogImage.href} />
+<meta property="og:locale" content="vi_VN" />
+<link rel="alternate" type="application/rss+xml" title={siteTitle} href={new URL("rss.xml", Astro.site).href} />

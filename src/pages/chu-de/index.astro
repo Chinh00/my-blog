@@ -1,0 +1,41 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro";
+import { getPublishedPosts } from "@/lib/posts";
+import { slugify } from "@/lib/slugify";
+
+const posts = await getPublishedPosts();
+
+/* Đếm bài theo tag — group theo SLUG (cùng khóa với route [tag].astro,
+   tránh lệch khi tag khác biến thể hoa/thường), sort số bài giảm dần rồi alphabet. */
+const bySlug = new Map<string, { label: string; count: number }>();
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    const slug = slugify(tag);
+    const entry = bySlug.get(slug) ?? { label: tag, count: 0 };
+    entry.count += 1;
+    bySlug.set(slug, entry);
+  }
+}
+const tags = [...bySlug.entries()].sort(
+  (a, b) => b[1].count - a[1].count || a[1].label.localeCompare(b[1].label, "vi"),
+);
+---
+
+<BaseLayout
+  title="Chủ đề"
+  description="Toàn bộ bài viết trên blog, sắp xếp theo chủ đề."
+>
+  <header class="page-header">
+    <h1 class="fx-title">Chủ đề</h1>
+    <p class="desc fx-title-sub">Toàn bộ bài viết, sắp xếp theo chủ đề. Chọn một thẻ để lọc.</p>
+    <ul class="tag-list tag-cloud" aria-label="Tất cả chủ đề">
+      {tags.map(([slug, { label, count }]) => (
+        <li>
+          <a class="tag tag--lg" href={`/chu-de/${slug}/`}>
+            {label} <span class="count">({count})</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </header>
+</BaseLayout>

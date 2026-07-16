@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giới thiệu — Chính.</title>
+<meta name="description" content="Về Nguyễn Văn Chính — người viết blog này — và cách liên hệ.">
+<!--
+  WIREFRAME — about.html — Trang giới thiệu (profile, liên hệ)
+  Blog cá nhân "Chính." — direction: Warm Serif (Lora + Be Vietnam Pro, subset vietnamese)
+  Token & quy tắc: docs/design-guidelines.md
+  File standalone: mở trực tiếp bằng trình duyệt, không cần build.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<script>
+/* Chống FOUC: đặt theme trước khi render. Ưu tiên lựa chọn đã lưu, fallback theo OS. */
+(function(){
+  var t = localStorage.getItem('theme');
+  if(!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+  /* Gate hiệu ứng chuyển động (§7 design-guidelines): chỉ bật khi KHÔNG prefers-reduced-motion */
+  if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches)
+    document.documentElement.classList.add('fx');
+})();
+</script>
+<style>
+/* ============================================================
+   DESIGN TOKENS — nguồn chân lý: docs/design-guidelines.md
+   Direction: "Warm Serif" — Lora (body) + Be Vietnam Pro (heading)
+   ============================================================ */
+:root{
+  color-scheme:light;
+  /* Màu — Light */
+  --bg:#FAFAF8;
+  --surface:#F1EEE7;
+  --text:#1A1A1A;
+  --muted:#6E6A63;          /* meta text ~60%, đạt AA 4.9:1 trên --bg */
+  --border:#E3E0D8;
+  --accent:#D4845C;         /* terracotta — trang trí, viền, heading lớn */
+  --accent-ink:#A85B32;     /* link/chữ nhỏ màu nhấn — AA 4.5:1 trên --bg */
+  --accent-soft:#F5E4D9;    /* nền tag pill, selection */
+  --on-accent:#2B1B10;      /* chữ trên nền accent (đạt AA cả 2 theme) */
+  --shadow:0 1px 2px rgb(26 26 26/.04),0 6px 16px rgb(26 26 26/.06);
+
+  /* Chữ */
+  --font-body:'Lora',Georgia,'Times New Roman',serif;
+  --font-heading:'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --text-sm:0.875rem;                                 /* 14px — meta, byline */
+  --text-caption:0.9375rem;                           /* 15px — chú thích ảnh */
+  --text-base:1.0625rem;                              /* 17px — body */
+  --text-lg:1.1875rem;                                /* 19px — sapo/lead */
+  --text-h3:1.5rem;                                   /* 24px */
+  --text-h2:clamp(1.75rem,1.5vw + 1.3rem,2rem);       /* 28→32px */
+  --text-h1:clamp(2rem,3vw + 1.1rem,2.5rem);          /* 32→40px */
+  --text-display:clamp(2.125rem,4vw + 1.05rem,2.875rem); /* 34→46px */
+  --leading-tight:1.15;
+  --leading-heading:1.25;
+  --leading-body:1.55;
+  --tracking-body:0.3px;    /* giãn chữ nhẹ giúp dấu tiếng Việt rõ hơn */
+
+  /* Khoảng cách (thang 4px) */
+  --space-1:0.25rem; --space-2:0.5rem; --space-3:0.75rem; --space-4:1rem;
+  --space-5:1.5rem; --space-6:2rem; --space-7:3rem; --space-8:4rem; --space-9:6rem;
+
+  /* Bo góc & khung */
+  --radius-sm:6px; --radius-md:12px; --radius-full:999px;
+  --content:700px;          /* ~66ch với Lora 17px */
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1A1A1A;
+  --surface:#242220;
+  --text:#F0EDE8;
+  --muted:#A39F96;
+  --border:#3A3733;
+  --accent:#E5C287;         /* golden — đạt AA 10:1 trên nền tối */
+  --accent-ink:#E5C287;
+  --accent-soft:#332B1D;
+  --shadow:0 1px 2px rgb(0 0 0/.3),0 6px 16px rgb(0 0 0/.25);
+}
+
+/* ============ Nền tảng ============ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  font-size:var(--text-base);
+  line-height:var(--leading-body);
+  letter-spacing:var(--tracking-body);
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .25s ease,color .25s ease;
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  html{scroll-behavior:auto}
+}
+h1,h2,h3,h4{
+  font-family:var(--font-heading);
+  font-weight:700;
+  line-height:var(--leading-heading);
+  letter-spacing:-0.015em;
+  color:var(--text);
+  margin:0 0 var(--space-4);
+}
+h1{font-size:var(--text-h1);line-height:var(--leading-tight)}
+h2{font-size:var(--text-h2)}
+h3{font-size:var(--text-h3)}
+p{margin:0 0 var(--space-5)}
+a{color:var(--accent-ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--accent-ink) 45%,transparent)}
+a:hover{text-decoration-color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+::selection{background:var(--accent-soft);color:var(--text)}
+img{max-width:100%;height:auto}
+.container{width:min(var(--content),100% - 2.5rem);margin-inline:auto}
+.accent{color:var(--accent-ink)}
+
+/* ============ Header (đồng nhất mọi trang) ============ */
+.site-header{border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;gap:var(--space-5);padding-block:var(--space-4);flex-wrap:wrap}
+.logo{
+  font-family:var(--font-heading);font-weight:800;font-size:1.375rem;
+  color:var(--text);text-decoration:none;letter-spacing:-0.02em;
+}
+.logo-dot{color:var(--accent)}
+.site-nav{display:flex;gap:var(--space-4);margin-left:auto}
+.site-nav a{
+  font-family:var(--font-heading);font-size:0.9375rem;font-weight:500;
+  color:var(--muted);text-decoration:none;padding:var(--space-2) var(--space-1);
+}
+.site-nav a:hover{color:var(--text)}
+.site-nav a[aria-current="page"]{color:var(--text);box-shadow:inset 0 -2px 0 var(--accent)}
+.header-actions{display:flex;gap:var(--space-2)}
+.icon-btn{
+  display:grid;place-items:center;width:2.75rem;height:2.75rem; /* 44px — chuẩn touch target */
+  background:none;border:1px solid transparent;border-radius:var(--radius-sm);
+  color:var(--muted);cursor:pointer;transition:color .15s,background-color .15s;
+}
+.icon-btn:hover{color:var(--text);background:var(--surface)}
+.icon-btn svg{width:20px;height:20px}
+/* Toggle theme: light hiển thị icon trăng, dark hiển thị icon mặt trời */
+.icon-sun{display:none}
+[data-theme="dark"] .icon-sun{display:block}
+[data-theme="dark"] .icon-moon{display:none}
+
+/* ============ Footer (đồng nhất mọi trang) ============ */
+.site-footer{border-top:1px solid var(--border);margin-top:var(--space-9)}
+.footer-inner{
+  padding-block:var(--space-6) var(--space-7);
+  display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-5);
+  align-items:baseline;justify-content:space-between;
+  font-size:var(--text-sm);color:var(--muted);
+}
+.footer-inner p{margin:0}
+.footer-links{display:flex;gap:var(--space-4)}
+.footer-links a{font-family:var(--font-heading);color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--accent-ink)}
+.footer-note{width:100%;font-size:0.8125rem;font-family:var(--font-heading)}
+
+/* ============ Post card ============ */
+.post-list{display:flex;flex-direction:column;gap:var(--space-4);padding:0;margin:0;list-style:none}
+.post-card{
+  border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:var(--space-5);
+  transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.post-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.post-meta{
+  font-family:var(--font-heading);font-size:var(--text-sm);
+  color:var(--muted);letter-spacing:normal;margin-bottom:var(--space-2);
+}
+.post-card h3{font-size:1.3125rem;margin-bottom:var(--space-2)}
+.post-card h3 a{color:var(--text);text-decoration:none}
+.post-card h3 a:hover{color:var(--accent-ink)}
+.post-card .excerpt{margin:0 0 var(--space-3);color:var(--text)}
+
+/* ============ Tag pill ============ */
+.tag-list{display:flex;flex-wrap:wrap;gap:var(--space-2);padding:0;margin:0;list-style:none}
+.tag{
+  display:inline-block;font-family:var(--font-heading);
+  font-size:0.8125rem;font-weight:500;letter-spacing:normal;
+  padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);
+  background:var(--accent-soft);color:var(--accent-ink);text-decoration:none;
+  transition:background-color .15s;
+}
+.tag:hover{background:color-mix(in srgb,var(--accent) 28%,var(--bg))}
+.tag .count{font-weight:400;opacity:.75}
+.tag--lg{font-size:0.9375rem;padding:var(--space-2) var(--space-4)}
+
+/* ============ Section chung ============ */
+.section-title{font-size:1.375rem;margin:var(--space-8) 0 var(--space-5)}
+.section-title::before{content:"— ";color:var(--accent)}
+
+/* ============ Masthead (trang chủ) ============ */
+.masthead{padding-block:var(--space-8) var(--space-6)}
+.masthead h1{font-size:var(--text-display);margin-bottom:var(--space-4)}
+.masthead .tagline{font-size:var(--text-lg);color:var(--muted);max-width:34rem;margin:0}
+
+/* ============ Bài viết (post page) ============ */
+.post-header{padding-block:var(--space-8) var(--space-5);border-bottom:1px solid var(--border);margin-bottom:var(--space-6)}
+.post-title{font-size:var(--text-display);line-height:var(--leading-tight);margin-bottom:var(--space-4)}
+.byline{font-family:var(--font-heading);font-size:var(--text-sm);color:var(--muted);letter-spacing:normal;display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center}
+.byline .dot::before{content:"·";margin-inline:var(--space-1)}
+.prose .lead{font-size:var(--text-lg);color:var(--muted)}
+.prose h2{margin-top:var(--space-7)}
+.prose h3{margin-top:var(--space-6)}
+.prose ul,.prose ol{padding-left:1.4rem;margin:0 0 var(--space-5)}
+.prose li{margin-bottom:var(--space-2)}
+.prose hr{border:none;text-align:center;margin:var(--space-7) 0}
+.prose hr::before{content:"···";letter-spacing:0.75em;color:var(--muted);font-size:1.25rem}
+
+/* Blockquote */
+blockquote{
+  margin:var(--space-6) 0;padding:var(--space-2) 0 var(--space-2) var(--space-5);
+  border-left:3px solid var(--accent);
+  font-style:italic;font-size:1.125rem;
+}
+blockquote p{margin-bottom:var(--space-2)}
+blockquote cite{display:block;font-style:normal;font-family:var(--font-heading);font-size:var(--text-sm);color:var(--muted)}
+
+/* Code */
+pre{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:var(--space-5);overflow-x:auto;margin:var(--space-6) 0;
+  font-family:var(--font-mono);font-size:0.875rem;line-height:1.6;letter-spacing:normal;
+}
+code{font-family:var(--font-mono);font-size:0.875em;letter-spacing:normal}
+p code,li code{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.1em 0.4em}
+
+/* Ảnh + chú thích */
+figure{margin:var(--space-6) 0}
+.img-placeholder{
+  aspect-ratio:16/9;display:grid;place-items:center;gap:var(--space-2);
+  background:linear-gradient(135deg,var(--surface),var(--accent-soft));
+  border:1.5px dashed var(--border);border-radius:var(--radius-md);
+  color:var(--muted);font-family:var(--font-heading);font-size:var(--text-sm);
+  text-align:center;padding:var(--space-4);
+}
+figcaption{
+  font-family:var(--font-heading);font-size:var(--text-caption);
+  color:var(--muted);text-align:center;margin-top:var(--space-3);letter-spacing:normal;
+}
+
+/* Chân bài viết */
+.post-footer{margin-top:var(--space-7);padding-top:var(--space-5);border-top:1px solid var(--border)}
+.post-footer .tag-list{margin-bottom:var(--space-6)}
+
+/* Prev / Next */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-top:var(--space-6)}
+.post-nav-link{
+  display:flex;flex-direction:column;gap:var(--space-1);
+  border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:var(--space-4) var(--space-5);text-decoration:none;
+  transition:border-color .2s;
+}
+.post-nav-link:hover{border-color:var(--accent)}
+.post-nav-link .label{font-family:var(--font-heading);font-size:0.8125rem;color:var(--muted)}
+.post-nav-link .title{font-family:var(--font-heading);font-weight:600;font-size:0.9375rem;color:var(--text);letter-spacing:normal}
+.post-nav-link.next{text-align:right}
+
+/* ============ Newsletter (Buttondown placeholder) ============ */
+.newsletter{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:var(--space-6);margin-top:var(--space-8);text-align:center;
+}
+.newsletter h2{font-size:1.375rem;margin-bottom:var(--space-2)}
+.newsletter>p{color:var(--muted);max-width:30rem;margin:0 auto var(--space-5)}
+.newsletter-form{display:flex;gap:var(--space-3);max-width:26rem;margin:0 auto}
+.newsletter-form input[type="email"]{
+  flex:1;min-width:0;padding:var(--space-3) var(--space-4);
+  font-family:var(--font-heading);font-size:0.9375rem;
+  color:var(--text);background:var(--bg);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+}
+.newsletter-form input[type="email"]:focus{border-color:var(--accent);outline:none}
+.btn{
+  font-family:var(--font-heading);font-weight:600;font-size:0.9375rem;
+  padding:var(--space-3) var(--space-5);border:none;border-radius:var(--radius-sm);
+  background:var(--accent);color:var(--on-accent);cursor:pointer;
+  transition:filter .15s,transform .15s;
+}
+.btn:hover{filter:brightness(.94)}
+.btn:active{transform:scale(.98)}
+.newsletter-note{font-family:var(--font-heading);font-size:0.8125rem;color:var(--muted);margin:var(--space-3) 0 0}
+
+/* ============ Giscus placeholder ============ */
+.giscus-placeholder{
+  margin-top:var(--space-7);border:1.5px dashed var(--border);border-radius:var(--radius-md);
+  padding:var(--space-7) var(--space-5);text-align:center;color:var(--muted);
+}
+.giscus-placeholder h2{font-size:1.25rem;margin-bottom:var(--space-2)}
+.giscus-placeholder p{font-family:var(--font-heading);font-size:var(--text-sm);margin:0}
+
+/* ============ Search modal (Pagefind placeholder) ============ */
+.search-dialog{
+  width:min(34rem,calc(100% - 2.5rem));border:1px solid var(--border);
+  border-radius:var(--radius-md);background:var(--bg);color:var(--text);
+  padding:var(--space-5);box-shadow:var(--shadow);
+}
+.search-dialog::backdrop{background:rgb(26 26 26/.45);backdrop-filter:blur(2px)}
+.search-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)}
+.search-head h2{font-size:1.125rem;margin:0}
+.search-dialog input[type="search"]{
+  width:100%;padding:var(--space-3) var(--space-4);
+  font-family:var(--font-heading);font-size:1rem;color:var(--text);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+}
+.search-dialog input[type="search"]:focus{border-color:var(--accent);outline:none}
+.search-note{font-family:var(--font-heading);font-size:0.8125rem;color:var(--muted);margin:var(--space-3) 0 0}
+
+/* ============ Trang giới thiệu ============ */
+.about-header{display:flex;align-items:center;gap:var(--space-5);padding-block:var(--space-8) var(--space-5)}
+.avatar-placeholder{
+  width:104px;height:104px;flex-shrink:0;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent-soft),var(--accent));
+  color:var(--on-accent);font-family:var(--font-heading);font-weight:800;font-size:2rem;
+  border:3px solid var(--bg);box-shadow:var(--shadow);
+}
+.contact-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--space-3)}
+.contact-list .label{display:inline-block;min-width:6.5rem;font-family:var(--font-heading);font-size:var(--text-sm);color:var(--muted)}
+
+/* ============ Trang chủ đề ============ */
+.page-header{padding-block:var(--space-8) var(--space-2)}
+.page-header .desc{color:var(--muted);margin:0}
+.tag-cloud{margin-top:var(--space-5)}
+.filter-note{
+  font-family:var(--font-heading);font-size:var(--text-sm);color:var(--muted);
+  margin:0 0 var(--space-4);
+}
+
+/* ============ Responsive — mobile first breakpoint 640px ============ */
+@media (max-width:640px){
+  .site-nav{order:3;width:100%;margin-left:0;gap:var(--space-3);padding-bottom:var(--space-2)}
+  .header-inner{row-gap:var(--space-1)}
+  .header-actions{margin-left:auto}
+  .newsletter-form{flex-direction:column}
+  .post-nav{grid-template-columns:1fr}
+  .post-nav-link.next{text-align:left}
+  .about-header{flex-direction:column;align-items:flex-start}
+}
+
+/* ============================================================
+   MOTION — §7 design-guidelines (hiệu ứng kiểu 21st.dev)
+   Chỉ animate opacity / transform / filter / background-* → không layout shift.
+   Gate html.fx: script <head> chỉ thêm khi KHÔNG prefers-reduced-motion,
+   nên người dùng reduced-motion / no-JS thấy nội dung ngay lập tức.
+   ============================================================ */
+:root{
+  --dur-xs:150ms;  /* micro: nút, icon */
+  --dur-sm:250ms;  /* hover: underline sweep, spotlight, border beam */
+  --dur-md:450ms;  /* page-title fade (post/tags/about) */
+  --dur-lg:700ms;  /* reveal: từ trong masthead, card/section */
+  --ease-out:cubic-bezier(.16,1,.3,1);   /* chuyển động "đi vào" (reveal) */
+  --ease-swift:cubic-bezier(.4,0,.2,1);  /* đổi trạng thái hover/active */
+  --stagger:90ms;                        /* bước trễ giữa từ / giữa card cùng lô */
+  /* Stop sáng của shimmer — light: mix ink+accent (3.6:1, đủ AA large text) */
+  --shimmer-hi:color-mix(in srgb,var(--accent-ink) 50%,var(--accent));
+}
+[data-theme="dark"]{--shimmer-hi:#F6E3BE}
+
+@keyframes fx-word-in{to{opacity:1;filter:blur(0);transform:none}}
+@keyframes fx-fade-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fx-shimmer{to{background-position:0 0}}
+@keyframes fx-drift{to{transform:translate3d(9%,7%,0) scale(1.18)}}
+
+/* --- 1a. Masthead reveal (home): từng từ blur+fade, chạy 1 lần khi load --- */
+html.fx .fx-word{
+  display:inline-block;opacity:0;filter:blur(6px);transform:translateY(14px);
+  animation:fx-word-in var(--dur-lg) var(--ease-out) both;
+  animation-delay:calc(var(--i,0)*var(--stagger));
+}
+html.fx .masthead .tagline{animation:fx-fade-up var(--dur-lg) var(--ease-out) .55s both}
+/* Shimmer "Chính.": 2 lượt sau khi reveal xong rồi dừng — khi nghỉ là màu ink đặc (AA 4.5:1) */
+@supports (-webkit-background-clip:text) or (background-clip:text){
+  html.fx .fx-shimmer{
+    background-image:linear-gradient(100deg,var(--accent-ink) 44%,var(--shimmer-hi) 50%,var(--accent-ink) 56%);
+    background-size:250% 100%;background-position:100% 0;background-repeat:no-repeat;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:fx-word-in var(--dur-lg) var(--ease-out) both,fx-shimmer 2.4s ease-in-out 2;
+    animation-delay:calc(var(--i,0)*var(--stagger)),1.15s;
+  }
+}
+/* 1b. Page-title fade (post/tags/about) — bản rút gọn của masthead reveal */
+html.fx .fx-title{animation:fx-fade-up var(--dur-md) var(--ease-out) both}
+html.fx .fx-title-sub{animation:fx-fade-up var(--dur-md) var(--ease-out) .12s both}
+
+/* --- 2. Scroll reveal: JS gắn .fx-reveal rồi .is-in khi vào viewport (1 lần) --- */
+html.fx .fx-reveal{
+  opacity:0;transform:translateY(14px);
+  transition:opacity var(--dur-lg) var(--ease-out) calc(var(--d,0)*var(--stagger)),
+             transform var(--dur-lg) var(--ease-out) calc(var(--d,0)*var(--stagger));
+}
+html.fx .fx-reveal.is-in{opacity:1;transform:none}
+
+/* --- 3a. Underline sweep — prose: nền 45% luôn hiện, line accent quét vào khi hover --- */
+html.fx .prose a,html.fx .filter-note a{
+  text-decoration:none;
+  background-image:linear-gradient(var(--accent-ink),var(--accent-ink)),
+    linear-gradient(color-mix(in srgb,var(--accent-ink) 45%,transparent),color-mix(in srgb,var(--accent-ink) 45%,transparent));
+  background-size:0 1px,100% 1px;background-position:0 100%,0 100%;background-repeat:no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  transition:background-size var(--dur-sm) var(--ease-swift);
+}
+html.fx .prose a:hover,html.fx .filter-note a:hover{background-size:100% 1px,100% 1px}
+/* 3b. Nav & footer: quét underline khi hover (không áp cho trang hiện tại aria-current) */
+html.fx .site-nav a:not([aria-current]){
+  background-image:linear-gradient(var(--accent),var(--accent));
+  background-size:0 2px;background-position:0 calc(100% - 4px);background-repeat:no-repeat;
+  transition:background-size var(--dur-sm) var(--ease-swift),color .15s;
+}
+html.fx .site-nav a:not([aria-current]):hover{background-size:100% 2px}
+html.fx .footer-links a{
+  background-image:linear-gradient(var(--accent-ink),var(--accent-ink));
+  background-size:0 1px;background-position:0 100%;background-repeat:no-repeat;
+  transition:background-size var(--dur-sm) var(--ease-swift),color .15s;
+}
+html.fx .footer-links a:hover{background-size:100% 1px}
+/* 3c. Micro-interaction nút */
+html.fx .btn{transition:filter var(--dur-xs),transform var(--dur-xs) var(--ease-swift),box-shadow var(--dur-xs)}
+html.fx .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+html.fx .btn:active{transform:translateY(0) scale(.97)}
+html.fx .icon-btn{transition:color .15s,background-color .15s,transform var(--dur-xs) var(--ease-swift)}
+html.fx .icon-btn:active{transform:scale(.9)}
+
+/* --- 3d. Card spotlight + border beam (post card — home & tags), theo --mx/--my từ JS --- */
+html.fx .fx-spot{position:relative}
+html.fx .fx-spot::after{           /* spotlight: quầng accent 11% bám theo chuột */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(200px circle at var(--mx,50%) var(--my,50%),
+    color-mix(in srgb,var(--accent) 11%,transparent),transparent 65%);
+  opacity:0;transition:opacity var(--dur-sm) var(--ease-swift);
+}
+html.fx .fx-spot::before{          /* border beam: ring 1px sáng chạy quanh viền */
+  content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;padding:1px;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),var(--accent),transparent 70%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  opacity:0;transition:opacity var(--dur-sm) var(--ease-swift);
+}
+html.fx .fx-spot:hover::after,html.fx .fx-spot:hover::before{opacity:1}
+html.fx .fx-spot:hover{border-color:var(--border)} /* ring đảm nhiệm màu accent thay viền */
+
+/* --- 4a. Aurora sau masthead (home) — reduced-motion: đứng yên (animation bị tắt ở trên) --- */
+.masthead{position:relative;isolation:isolate}
+.fx-aurora{
+  position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none;
+  /* mask làm mờ dần ra mép → quầng sáng mềm, không thành khối chữ nhật */
+  -webkit-mask:radial-gradient(58% 88% at 30% 38%,#000 22%,transparent 64%);
+  mask:radial-gradient(58% 88% at 30% 38%,#000 22%,transparent 64%);
+}
+.fx-aurora::before,.fx-aurora::after{
+  content:"";position:absolute;width:55%;aspect-ratio:1;border-radius:50%;filter:blur(64px);
+}
+.fx-aurora::before{
+  background:radial-gradient(circle,var(--accent-soft) 0%,transparent 70%);
+  top:-35%;left:-12%;opacity:.7;animation:fx-drift 16s ease-in-out infinite alternate;
+}
+.fx-aurora::after{
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 0%,transparent 70%);
+  bottom:-45%;right:-8%;opacity:.45;animation:fx-drift 22s ease-in-out infinite alternate-reverse;
+}
+
+/* --- 4b. Reading progress (post) — phản hồi trực tiếp theo scroll, chạy cả khi reduced-motion --- */
+.fx-progress{
+  position:fixed;top:0;left:0;width:100%;height:3px;z-index:20;pointer-events:none;
+  background:var(--accent);transform:scaleX(0);transform-origin:0 50%;
+}
+
+/* --- 4c. Theme transition mượt: JS thêm html.theme-anim trong 350ms khi bấm toggle --- */
+html.fx.theme-anim,html.fx.theme-anim *,html.fx.theme-anim *::before,html.fx.theme-anim *::after{
+  transition:background-color .3s ease,color .3s ease,border-color .3s ease,fill .3s ease,stroke .3s ease!important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER — đồng nhất trên mọi trang ============ -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="home.html" aria-label="Chính. — về trang chủ">Chính<span class="logo-dot">.</span></a>
+    <nav class="site-nav" aria-label="Điều hướng chính">
+      <a href="home.html">Bài viết</a>
+      <a href="tags.html">Chủ đề</a>
+      <a href="about.html" aria-current="page">Giới thiệu</a>
+    </nav>
+    <div class="header-actions">
+      <!-- Nút mở modal tìm kiếm — Pagefind sẽ nhúng UI vào dialog bên dưới footer -->
+      <button class="icon-btn" id="search-btn" aria-label="Tìm kiếm (Ctrl+K)" title="Tìm kiếm (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <!-- Toggle dark mode — hoạt động thật trong wireframe (JS + CSS variables + localStorage) -->
+      <button class="icon-btn" id="theme-toggle" aria-label="Chuyển giao diện sáng / tối" title="Giao diện sáng / tối">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ PROFILE — ảnh placeholder + lời chào ấm áp ============ -->
+  <header class="about-header">
+    <!-- AVATAR PLACEHOLDER — ảnh thật: 208×208px (2x), bo tròn, alt="Chân dung Nguyễn Văn Chính" -->
+    <div class="avatar-placeholder" role="img" aria-label="Ảnh chân dung Nguyễn Văn Chính (placeholder)">NC</div>
+    <div>
+      <!-- MOTION §7: page-title fade — bản rút gọn của masthead reveal -->
+      <h1 class="fx-title">Xin chào, mình là Chính.</h1>
+      <p class="byline fx-title-sub" style="margin:0">Hà Nội, Việt Nam · viết từ 2024</p>
+    </div>
+  </header>
+
+  <div class="prose">
+    <p class="lead">Cảm ơn bạn đã ghé qua. Đây là nơi mình lưu lại những gì học được trên đường đi — để nhớ lâu hơn, và biết đâu lại giúp được ai đó đang đi đoạn đường tương tự.</p>
+
+    <p>Ban ngày mình làm việc trong ngành phần mềm. Ngoài giờ, mình đọc sách, đi những chuyến ngắn ngày, và tập viết đều đặn. Blog này không có chủ đề cố định — mình viết về <strong>kinh nghiệm làm việc</strong>, <strong>những điều học được</strong>, và <strong>các lát cắt cuộc sống</strong> mà mình thấy đáng kể lại.</p>
+
+    <p>Mình tin rằng viết là cách học sâu nhất: một ý tưởng chưa thể diễn đạt rõ ràng là một ý tưởng chưa thực sự thuộc về mình. Vì vậy mọi bài ở đây đều được viết trước hết cho chính mình — nếu nó hữu ích với bạn nữa thì đó là một niềm vui nhân đôi.</p>
+
+    <p>Nếu bạn muốn trao đổi về bất kỳ bài viết nào, hoặc chỉ đơn giản là chào một câu, đừng ngại liên hệ. Mình đọc và trả lời tất cả email, dù đôi khi hơi chậm.</p>
+
+    <h2>Liên hệ</h2>
+    <!-- Link mạng xã hội: thay # bằng URL thật khi build -->
+    <ul class="contact-list">
+      <li><span class="label">Email</span> <a href="mailto:chao@vidu.com">chao@vidu.com</a></li>
+      <li><span class="label">GitHub</span> <a href="#" rel="me">github.com/nguyenvanchinh</a></li>
+      <li><span class="label">Facebook</span> <a href="#" rel="me">fb.com/nguyenvanchinh</a></li>
+      <li><span class="label">RSS</span> <a href="#">Theo dõi blog qua RSS</a></li>
+    </ul>
+
+    <hr>
+
+    <p>Blog được dựng bằng <a href="https://astro.build">Astro</a>, chữ <a href="https://fonts.google.com/specimen/Lora">Lora</a> và <a href="https://fonts.google.com/specimen/Be+Vietnam+Pro">Be Vietnam Pro</a> — cả hai đều hỗ trợ đầy đủ tiếng Việt.</p>
+  </div>
+
+  <!-- ============ NEWSLETTER — Buttondown embed placeholder ============ -->
+  <section class="newsletter" aria-labelledby="newsletter-title">
+    <h2 id="newsletter-title">Giữ liên lạc nhé</h2>
+    <p>Mỗi tháng một email tổng hợp bài viết mới. Không spam, hủy lúc nào cũng được.</p>
+    <!-- Khi tích hợp: action="https://buttondown.com/api/emails/embed-subscribe/{username}" method="post" -->
+    <form class="newsletter-form">
+      <input type="email" name="email" placeholder="email-cua-ban@vidu.com" required aria-label="Địa chỉ email của bạn">
+      <button class="btn" type="submit">Đăng ký</button>
+    </form>
+    <p class="newsletter-note">Vận hành bởi Buttondown.</p>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER — đồng nhất trên mọi trang ============ -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© 2026 Nguyễn Văn Chính — viết để nhớ lâu hơn.</p>
+    <nav class="footer-links" aria-label="Liên kết chân trang">
+      <!-- RSS: trỏ tới /rss.xml khi build bằng @astrojs/rss -->
+      <a href="#" title="Theo dõi qua RSS">RSS</a>
+      <a href="#" title="GitHub của mình">GitHub</a>
+      <a href="#" title="Gửi email cho mình">Email</a>
+    </nav>
+    <p class="footer-note">Dựng bằng Astro · Chữ Lora &amp; Be Vietnam Pro</p>
+  </div>
+</footer>
+
+<!-- ============ SEARCH MODAL — placeholder cho Pagefind (astro-pagefind) ============ -->
+<dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+  <div class="search-head">
+    <h2 id="search-title">Tìm kiếm</h2>
+    <button class="icon-btn" id="search-close" aria-label="Đóng tìm kiếm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <input type="search" placeholder="Gõ để tìm bài viết…" aria-label="Từ khóa tìm kiếm">
+  <p class="search-note">Wireframe: UI Pagefind sẽ được nhúng tại đây khi tích hợp <code>astro-pagefind</code>. Phím tắt: Ctrl/⌘ + K.</p>
+</dialog>
+
+<script>
+/* ===== Dark mode toggle — nguồn: docs/design-guidelines.md ===== */
+var root = document.documentElement;
+var themeAnimT;
+document.getElementById('theme-toggle').addEventListener('click', function(){
+  var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  /* Chuyển màu mượt toàn trang (§7) — rule CSS gate qua html.fx nên tôn trọng reduced-motion */
+  root.classList.add('theme-anim');
+  clearTimeout(themeAnimT);
+  themeAnimT = setTimeout(function(){ root.classList.remove('theme-anim'); }, 350);
+  root.dataset.theme = next;
+  localStorage.setItem('theme', next);
+});
+
+/* ===== Search modal (placeholder Pagefind) ===== */
+var dialog = document.getElementById('search-dialog');
+document.getElementById('search-btn').addEventListener('click', function(){ dialog.showModal(); });
+document.getElementById('search-close').addEventListener('click', function(){ dialog.close(); });
+dialog.addEventListener('click', function(e){ if(e.target === dialog) dialog.close(); });
+document.addEventListener('keydown', function(e){
+  if((e.ctrlKey || e.metaKey) && e.key === 'k'){ e.preventDefault(); dialog.showModal(); }
+});
+
+/* ===== Newsletter (placeholder Buttondown) — chặn submit trong wireframe ===== */
+document.querySelectorAll('.newsletter-form').forEach(function(f){
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    f.nextElementSibling.textContent = 'Wireframe: form sẽ trỏ tới endpoint đăng ký của Buttondown.';
+  });
+});
+
+/* ============================================================
+   MOTION (§7 design-guidelines) — hiệu ứng kiểu 21st.dev.
+   Gate: html.fx (đặt trong <head>, chỉ khi KHÔNG prefers-reduced-motion)
+   → reduced-motion / no-JS: nội dung hiển thị ngay, không hiệu ứng.
+   ============================================================ */
+var fxOn = root.classList.contains('fx');
+
+/* ---- Scroll reveal: fade-up 1 lần khi vào viewport, stagger theo lô ---- */
+if(fxOn && 'IntersectionObserver' in window){
+  var revealTargets = [];
+  document.querySelectorAll('.post-card,.section-title,.newsletter,.giscus-placeholder,.post-nav,.prose figure').forEach(function(el){
+    /* Card animate ở <li> bao ngoài để không đè transition hover của chính card */
+    var t = el.classList.contains('post-card') ? (el.closest('li') || el) : el;
+    if(revealTargets.indexOf(t) === -1){ t.classList.add('fx-reveal'); revealTargets.push(t); }
+  });
+  var io = new IntersectionObserver(function(entries){
+    var i = 0;
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      en.target.style.setProperty('--d', i++);   /* stagger trong cùng một lô vào viewport */
+      en.target.classList.add('is-in');
+      io.unobserve(en.target);
+    });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.05});
+  revealTargets.forEach(function(el){ io.observe(el); });
+}
+
+/* ---- Spotlight + border beam trên post card: toạ độ chuột → CSS var ---- */
+if(fxOn){
+  document.querySelectorAll('.post-card').forEach(function(el){ el.classList.add('fx-spot'); });
+  document.addEventListener('pointermove', function(e){
+    var c = e.target && e.target.closest ? e.target.closest('.fx-spot') : null;
+    if(!c) return;
+    var r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, {passive:true});
+}
+
+/* ---- Reading progress (trang có .fx-progress) — phản hồi trực tiếp theo scroll
+   nên vẫn hoạt động khi reduced-motion (không phải animation trang trí) ---- */
+var fxProg = document.querySelector('.fx-progress');
+if(fxProg){
+  var progTick = false;
+  var progUpdate = function(){
+    var d = document.documentElement;
+    var max = d.scrollHeight - d.clientHeight;
+    fxProg.style.transform = 'scaleX(' + (max > 0 ? Math.min(d.scrollTop / max, 1) : 0) + ')';
+    progTick = false;
+  };
+  window.addEventListener('scroll', function(){
+    if(!progTick){ progTick = true; requestAnimationFrame(progUpdate); }
+  }, {passive:true});
+  progUpdate();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+---
+import { giscus } from "@/config";
+---
+
+{
+  giscus ? (
+    <section class="giscus-comments" aria-labelledby="comments-title">
+      <h2 id="comments-title" class="section-title">Bình luận</h2>
+      <div id="giscus-container" />
+    </section>
+  ) : (
+    <section class="giscus-placeholder" aria-labelledby="comments-title">
+      <h2 id="comments-title">Bình luận</h2>
+      <p>
+        Giscus (GitHub Discussions) sẽ được nhúng tại đây.
+        <br />
+        Cần tài khoản GitHub để tham gia thảo luận.
+      </p>
+    </section>
+  )
+}
+
+{
+  giscus && (
+    <script is:inline define:vars={{ giscus }}>
+      /* Theme BAN ĐẦU đọc từ data-theme của site (KHÔNG dùng
+         preferred_color_scheme — theo OS chứ không theo toggle; red-team).
+         Toggle sau đó sync qua MutationObserver + postMessage. */
+      (function () {
+        var giscusTheme = function () {
+          return document.documentElement.dataset.theme === "dark"
+            ? "dark_dimmed"
+            : "light";
+        };
+        var container = document.getElementById("giscus-container");
+        if (!container) return;
+
+        var s = document.createElement("script");
+        s.src = "https://giscus.app/client.js";
+        s.async = true;
+        s.crossOrigin = "anonymous";
+        var attrs = {
+          "data-repo": giscus.repo,
+          "data-repo-id": giscus.repoId,
+          "data-category": giscus.category,
+          "data-category-id": giscus.categoryId,
+          "data-mapping": "pathname",
+          "data-strict": "0",
+          "data-reactions-enabled": "1",
+          "data-emit-metadata": "0",
+          "data-input-position": "bottom",
+          "data-theme": giscusTheme(),
+          "data-lang": "vi",
+        };
+        Object.keys(attrs).forEach(function (k) {
+          s.setAttribute(k, attrs[k]);
+        });
+        container.appendChild(s);
+
+        new MutationObserver(function () {
+          var iframe = document.querySelector("iframe.giscus-frame");
+          if (!iframe || !iframe.contentWindow) return;
+          iframe.contentWindow.postMessage(
+            { giscus: { setConfig: { theme: giscusTheme() } } },
+            "https://giscus.app"
+          );
+        }).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["data-theme"],
+        });
+      })();
+    </script>
+  )
+}

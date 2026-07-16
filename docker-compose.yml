@@ -1,11 +1,10 @@
 # Chạy blog trên server:
 #   docker compose pull && docker compose up -d
-# TODO(onboarding): thay OWNER bằng GitHub username (image do CI push lên GHCR).
 # Image GHCR mặc định là private — set package visibility Public trên GitHub,
 # hoặc `docker login ghcr.io` trên server trước khi pull.
 services:
   blog:
-    image: ghcr.io/OWNER/my-blog:latest
+    image: ghcr.io/chinh00/my-blog:latest
     # Build tại chỗ không cần registry: comment dòng image, mở dòng build
     # build: .
     ports:

@@ -38,9 +38,22 @@ Bỏ `draft: true` (hoặc đặt `false`) khi muốn xuất bản. Thời gian 
 3. **Buttondown (newsletter)** — điền `buttondownUsername` để form đăng ký hoạt động.
    Gửi bài qua email: trên dashboard Buttondown bật **RSS-to-email** trỏ vào `https://{domain}/rss.xml` (feed chứa full nội dung bài). Sau khi bật, gửi thử 1 email và kiểm tra ký tự tiếng Việt hiển thị đúng.
 
-## Deploy
+## Deploy — Docker + GitHub Actions (GHCR)
 
-Output tĩnh thuần (`dist/`), không adapter — deploy được lên Vercel / Cloudflare Pages / GitHub Pages. Build command `npm run build`, output directory `dist`.
+Output tĩnh thuần (`dist/`), đóng gói nginx:alpine qua `Dockerfile` multi-stage.
+
+**CI/CD** (`.github/workflows/ci.yml`): mỗi push lên `main` → job `check-build` (astro check + build) → job `docker` build image và push `ghcr.io/{owner}/my-blog:latest` (+ tag theo SHA). Pull request chỉ chạy check-build. Không cần secret ngoài — dùng `GITHUB_TOKEN` sẵn có.
+
+**Chạy trên server:**
+
+```bash
+# sửa OWNER trong docker-compose.yml thành GitHub username trước
+docker compose pull && docker compose up -d   # blog chạy ở cổng 8080
+```
+
+Lưu ý: package GHCR mặc định private — vào GitHub Package settings đổi visibility thành Public, hoặc `docker login ghcr.io` trên server. Build tại chỗ không cần registry: `docker build -t my-blog . && docker run -d -p 8080:80 my-blog`.
+
+Nginx config tại `deploy/nginx.conf`: gzip, cache immutable cho `/_astro/`, trang 404 riêng. (Vẫn deploy được lên Vercel / Cloudflare Pages / GitHub Pages nếu đổi ý — output là static thuần.)
 
 ## Cấu trúc chính
 

@@ -26,7 +26,7 @@ Chốt ngày 2026-07-15 (bootstrap --full, user đã duyệt).
 
 ## Deploy
 
-Chưa chốt host. Output static thuần → portable Vercel / Cloudflare Pages / GitHub Pages, không cần adapter.
+Chốt 2026-07-16: **self-host Docker** — image nginx:alpine chứa `dist/` (Dockerfile multi-stage), CI/CD GitHub Actions push GHCR (`.github/workflows/ci.yml`), chạy bằng `docker-compose.yml` cổng 8080. Output vẫn static thuần → vẫn portable sang Vercel / Cloudflare Pages / GitHub Pages nếu cần.
 
 ## Nguồn
 
@@ -35,5 +35,4 @@ Chưa chốt host. Output static thuần → portable Vercel / Cloudflare Pages 
 
 ## Câu hỏi chưa chốt
 
-- Buttondown ingest ký tự tiếng Việt qua RSS-to-email — verify khi setup.
-- Host deploy cụ thể — chốt ở phase onboarding.
+- Buttondown ingest ký tự tiếng Việt qua RSS-to-email — verify khi setup (bước kiểm nằm trong README).

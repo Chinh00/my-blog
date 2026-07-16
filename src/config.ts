@@ -4,14 +4,13 @@
  * mọi chỗ khác dùng Astro.site / import.meta.env.SITE — không hardcode URL thứ hai.
  */
 
-// TODO(onboarding): đổi thành domain thật trước khi deploy (vd https://chinh.dev)
-export const siteUrl = "https://example.com";
+export const siteUrl = "https://blog.phopoint.io.vn";
 
-export const siteTitle = "Chính.";
+export const siteTitle = "Chinh.";
 export const siteTagline = "Chia sẻ kinh nghiệm, kiến thức và cuộc sống";
 export const siteDescription =
-  "Blog cá nhân của Nguyễn Văn Chính — nơi chia sẻ kinh nghiệm làm việc, kiến thức và những lát cắt cuộc sống.";
-export const author = "Nguyễn Văn Chính";
+  "Blog cá nhân của Chinh — nơi chia sẻ kinh nghiệm làm việc, kiến thức và những lát cắt cuộc sống.";
+export const author = "Chinh";
 
 /**
  * Giscus (bình luận qua GitHub Discussions) — repoId/categoryId KHÔNG phải

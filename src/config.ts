@@ -24,7 +24,12 @@ export interface GiscusConfig {
   category: string;
   categoryId: string;
 }
-export const giscus: GiscusConfig | null = null;
+export const giscus: GiscusConfig | null = {
+  repo: "Chinh00/my-blog",
+  repoId: "R_kgDOTad8ig",
+  category: "Announcements",
+  categoryId: "DIC_kwDOTad8is4DBXVf",
+};
 
 /**
  * TODO(onboarding): username Buttondown (buttondown.com) — điền để form
